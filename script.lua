@@ -537,7 +537,7 @@ do
 		self.fingerprint = instance
 		local _position = instance.Position
 		local _vector3 = Vector3.new(0, 10, 0)
-		local marker = LocationMarker.new(_position + _vector3):setTitle(instance.Name):setSize(8, 8):setColor(Color3.new(1, 0.5, 0)):setEnabled(true)
+		local marker = LocationMarker.new(_position + _vector3):setTitle(instance.Name):setSize(5, 10):setColor(Color3.new(1, 0.5, 0)):setEnabled(true)
 		self.marker = marker
 		local _binding_3 = self
 		local bin = _binding_3.bin
@@ -570,7 +570,7 @@ do
 		self.primary = primary
 		local _position = instance:GetPivot().Position
 		local _vector3 = Vector3.new(0, 10, 0)
-		local marker = LocationMarker.new(_position + _vector3):setTitle("Cursed Item"):setSize(8, 8):setColor(Color3.new(1, 0, 0)):setEnabled(true)
+		local marker = LocationMarker.new(_position + _vector3):setTitle("Cursed Item"):setSize(5, 14):setColor(Color3.new(1, 0, 0)):setEnabled(true)
 		self.marker = marker
 		local _binding_3 = self
 		local bin = _binding_3.bin
