@@ -535,9 +535,38 @@ do
 	function FingerprintComponent:constructor(instance)
 		super.constructor(self, instance)
 		self.fingerprint = instance
-		local _position = instance.Position
-		local _vector3 = Vector3.new(0, 10, 0)
-		local marker = LocationMarker.new(_position + _vector3):setTitle(instance.Name):setSize(5, 10):setColor(Color3.new(1, 0.5, 0)):setEnabled(true)
+		local marker = LocationMarker.new(instance.Position):setTitle(instance.Name):setSize(5, 10):setColor(Color3.new(1, 0.5, 0)):setEnabled(true)
+		self.marker = marker
+		local _binding_3 = self
+		local bin = _binding_3.bin
+		bin:add(marker)
+		bin:add(instance.AncestryChanged:Connect(function()
+			return self:destroy()
+		end))
+	end
+end
+local ItemComponent
+do
+	local super = BaseComponent
+	ItemComponent = setmetatable({}, {
+		__tostring = function()
+			return "ItemComponent"
+		end,
+		__index = super,
+	})
+	ItemComponent.__index = ItemComponent
+	function ItemComponent.new(...)
+		local self = setmetatable({}, ItemComponent)
+		return self:constructor(...) or self
+	end
+	function ItemComponent:constructor(instance)
+		super.constructor(self, instance)
+		local handle = expectChild(instance, { "BasePart", "Handle" }, 30)
+		self.handle = handle
+		if not handle then
+			error("[ItemComponent]: " .. tostring(instance) .. " is missing Handle")
+		end
+		local marker = LocationMarker.new(instance:GetPivot().Position):setTitle(instance:GetAttribute("ItemName")):setSize(5, 10):setColor(Color3.new(0.5, 1, 0.5)):setEnabled(true)
 		self.marker = marker
 		local _binding_3 = self
 		local bin = _binding_3.bin
@@ -564,13 +593,14 @@ do
 	function CursedPossesionHolderComponent:constructor(instance)
 		super.constructor(self, instance)
 		local primary = instance.PrimaryPart
+		self.primary = primary
 		if not primary then
 			error("[CursedPossesionHolderComponent]: " .. tostring(instance) .. " is missing a primary part!")
 		end
 		self.primary = primary
 		local _position = instance:GetPivot().Position
-		local _vector3 = Vector3.new(0, 10, 0)
-		local marker = LocationMarker.new(_position + _vector3):setTitle("Cursed Item"):setSize(5, 14):setColor(Color3.new(1, 0, 0)):setEnabled(true)
+		local _vector3 = Vector3.new(0, 3, 0)
+		local marker = LocationMarker.new(_position + _vector3):setTitle(instance:GetAttribute("ItemName")):setSize(5, 14):setColor(Color3.new(1, 0, 0)):setEnabled(true)
 		self.marker = marker
 		local _binding_3 = self
 		local bin = _binding_3.bin
@@ -789,8 +819,14 @@ do
 				return FingerprintComponent.new(fingerprint)
 			end)
 		end)
+		-- Items
+		forChildThen(Workspace, { "Folder", "Items" }, function(folder)
+			forChildThen(folder, { "Model" }, function(item)
+				return ItemComponent.new(item)
+			end)
+		end)
 		-- CPH
-		forChildThen(Workspace, { "Folder", "CursedPossesionHolder" }, function(folder)
+		forChildThen(Workspace, { "Folder", "CursedPossessionHolder" }, function(folder)
 			forChildThen(folder, { "Model" }, function(cph)
 				return CursedPossesionHolderComponent.new(cph)
 			end)
